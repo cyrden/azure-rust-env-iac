@@ -1,0 +1,31 @@
+---
+- name: Install Rust on Azure VM
+  hosts: all
+  tasks:
+    - name: Update apt repository cache
+      apt:
+        update_cache: yes
+      become: yes
+
+    - name: Install dependencies
+      apt:
+        name: 
+          - build-essential
+          - curl
+        state: present
+      become: yes
+    
+    - name: Download and run Rust installation script
+      shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      args:
+        warn: false
+
+    - name: Add Rust to the PATH
+      shell: echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+
+    - name: Clone learn-rust github repository
+      git:
+        repo: https://github.com/cyrden/learn-rust.git
+        version: main
+        dest: ~/learn-rust
+        accept_hostkey: yes
